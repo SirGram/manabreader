@@ -78,6 +78,7 @@ function normalizePath(base: string, path: string): string {
 
   return resolvedParts.join("/");
 }
+
 function findContentRoot(zip: JSZip): string {
   const files = Object.keys(zip.files);
   const opfFile = files.find((file) => file.endsWith(".opf"));
