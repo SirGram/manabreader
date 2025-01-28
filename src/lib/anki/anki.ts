@@ -43,15 +43,25 @@ export async function getDeckNames(): Promise<string[] | null> {
   }
 }
 
-export async function getDeckCards(deckName: string): Promise<string[] | null> {
+export async function getDeckCards(
+  deckName: string,
+  fieldName: string
+): Promise<string[] | null> {
   try {
-    const deckCards = await invokeAnkiConnect<string[]>({
+    const cardIds = await invokeAnkiConnect<string[]>({
       action: "findCards",
       version: 6,
       params: { query: `deck:${deckName}` },
     });
-    console.log(deckCards);
-    return deckCards;
+    const cardsInfo = await invokeAnkiConnect<any[]>({
+      action: "cardsInfo",
+      version: 6,
+      params: { cards: cardIds },
+    });
+    const words: string[] = cardsInfo.map((card) => card.fields[fieldName].value);
+    console.log(cardsInfo);
+
+    return words;
   } catch (error) {
     console.warn("Couldn't connect to Anki:", error);
     return null;

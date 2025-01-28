@@ -1,1 +1,16 @@
 @import "tailwindcss";
+
+.clickable-word {
+  cursor: pointer;
+  transition: background 0.2s;
+  color:red;
+}
+
+.clickable-word:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.highlighted {
+  color: #082715;
+  font-weight: 500;
+}

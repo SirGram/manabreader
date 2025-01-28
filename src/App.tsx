@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { parseEpub } from "./lib/epub/epubParser";
-import { highlightWords } from "./lib/epub/highlight";
+import { EpubRenderer, highlightWords } from "./lib/epub/epubRenderer";
 import { getDeckCards, getDeckNames } from "./lib/anki/anki";
 
 function App() {
   const [book, setBook] = useState<string[]>([]);
   const [section, setSection] = useState<string>("");
   const [currentSection, setCurrentSection] = useState(0);
-  const words = ["german", "stories", "detail", "illustration"];
+  const [words, setWords] = useState<string[]>([]);
 
   const fetchEpub = async () => {
     try {
-      const response = await fetch("/test/ahoi.epub");
+      const response = await fetch("/test/harry.epub");
       if (!response.ok)
         throw new Error(`Failed to fetch EPUB: ${response.statusText}`);
 
@@ -30,9 +30,16 @@ function App() {
   const [deckNames, setDeckNames] = useState<string[]>([]);
 
   useEffect(() => {
-    fetchEpub();
-    getDeckCards("German");
-    console.log(deckNames);
+    const initializeData = async () => {
+      await fetchEpub();
+      
+      const fetchedWords = await getDeckCards("German", "Vocab");
+      if (fetchedWords !== null) {
+        setWords(fetchedWords);
+      }
+    };
+
+    initializeData();
   }, []);
 
   useEffect(() => {
@@ -73,10 +80,7 @@ function App() {
         </button>
       </div>
 
-      <div
-        dangerouslySetInnerHTML={{ __html: section }}
-        className="prose max-w-none mb-6"
-      />
+      <EpubRenderer html={section} words={words} />
     </>
   );
 }
